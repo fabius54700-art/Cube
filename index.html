@@ -9,92 +9,117 @@
     <title>Hiboux Funky</title>
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759; --text: #ffffff; }
+        
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        
         .container { width: 100%; max-width: 400px; text-align: center; padding-bottom: 40px; }
+        
         h1 { font-weight: 200; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 25px; font-size: 1.4rem; }
+        
         .card { background: var(--card); padding: 20px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        
         .section-title { color: #888; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 15px; display: block; }
+
+        /* BOUTON POWER CORRIGÉ */
         .btn { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: 600; font-size: 16px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; outline: none; }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
-        /* Style corrigé du bouton Power */
-        #pwrBtn { border: 2px solid transparent; transition: 0.3s; }
+        #pwrBtn { border: 2px solid transparent; }
         .pwr-on { background: #3a3a3c !important; border-color: var(--success) !important; box-shadow: 0 0 15px rgba(52, 199, 89, 0.2); }
         .pwr-off { background: #3a3a3c !important; border-color: var(--danger) !important; color: #888; }
         
+        /* GESTION DU BLOCAGE (GRISÉ) */
+        #controls-container { position: relative; transition: 0.5s; }
+        .locked { opacity: 0.2; pointer-events: none; filter: grayscale(1); }
+        
+        #status-badge { font-size: 10px; padding: 4px 12px; border-radius: 20px; background: #222; color: #666; display: inline-block; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #333; }
+
         input[type="range"] { width: 100%; -webkit-appearance: none; background: #333; height: 6px; border-radius: 3px; margin: 25px 0; outline: none; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+        
         .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 15px; }
         .dot { height: 35px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; }
+        
         select { width: 100%; padding: 15px; border-radius: 15px; background: #3a3a3c; color: white; border: none; font-size: 16px; margin-top: 5px; -webkit-appearance: none; text-align: center; outline: none; }
+        
         .switch-row { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; }
         input[type="checkbox"] { transform: scale(1.4); margin-right: 10px; }
-        .link-box { display: block; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; font-size: 11px; color: #555; text-decoration: none; margin-top: 10px; border: 1px solid transparent; word-break: break-all; }
+        
         .hint-text { color: #666; font-size: 11px; margin-top: 8px; line-height: 1.4; text-align: left; }
         .hidden { display: none !important; }
         #color-wheel { display: flex; justify-content: center; margin: 15px 0; }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h1>Hiboux Funky</h1>
+
         <div id="no-bt" class="card hidden">
-            <p style="color:#aaa;">Bluetooth non supporté.</p>
-            <button class="btn btn-grey" onclick="location.reload()">Réactualiser</button>
+            <p style="color:#aaa;">Bluetooth non supporté sur ce navigateur.</p>
         </div>
 
         <div id="app" class="hidden">
+            <div id="status-badge">Non Connecté</div>
             <button id="connectBtn" class="btn" style="background:var(--success);">Connecter le Hiboux 🔌</button>
 
-            <div class="card">
-                <span class="section-title">Lumière & Couleur</span>
-                <button id="pwrBtn" class="btn pwr-off">Déconnecté</button>
-                <div id="color-wheel"></div>
-                <input type="range" id="bri" min="10" max="255" value="150">
-                <div class="grid">
-                    <div class="dot" style="background:red" onclick="setPreset(0)"></div>
-                    <div class="dot" style="background:#00ff00" onclick="setPreset(1)"></div>
-                    <div class="dot" style="background:cyan" onclick="setPreset(2)"></div>
-                    <div class="dot" style="background:yellow" onclick="setPreset(3)"></div>
-                    <div class="dot" style="background:purple" onclick="setPreset(4)"></div>
-                    <div class="dot" style="background:white" onclick="setPreset(5)"></div>
-                </div>
-            </div>
+            <div id="controls-container" class="locked">
+                
+                <div class="card">
+                    <span class="section-title">Lumière & Couleur</span>
+                    <button id="pwrBtn" class="btn pwr-off">Hiboux Éteint</button>
+                    
+                    <div id="color-wheel"></div>
+                    
+                    <input type="range" id="bri" min="10" max="255" value="150">
 
-            <div class="card">
-                <span class="section-title">Ambiance Dynamique</span>
-                <select id="fxSelect">
-                    <option value="0">Statique (Couleur)</option>
-                    <option value="2">🌈 Arc-en-ciel Zen</option>
-                    <option value="3">💓 Respiration</option>
-                    <option value="4">🔥 Feu de cheminée</option>
-                    <option value="5">🌊 Océan (Bleu/Cyan)</option>
-                    <option value="6">🌲 Forêt Magique</option>
-                    <option value="7">✨ Disco Chill</option>
-                </select>
-            </div>
-
-            <div class="card">
-                <span class="section-title">Options Avancées</span>
-                <div class="switch-row">
-                    <span>Capteur de Vibration</span>
-                    <input type="checkbox" id="vibToggle" checked>
-                </div>
-                <div class="hint-text">Allume la lampe à 2% d'intensité pendant 5s si Hiboux détecte un mouvement dans le noir (Mode Pipi).</div>
-                <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-                <div style="text-align:left;">
-                    <span style="font-size:14px; color:#aaa;">Minuteur de Sommeil</span>
-                    <div style="display:flex; gap:10px; margin-top:12px;">
-                        <select id="timerVal" style="flex:1.2; margin-top:0;">
-                            <option value="10">Test (10 sec)</option>
-                            <option value="900">15 min</option>
-                            <option value="1800" selected>30 min</option>
-                            <option value="3600">1h</option>
-                        </select>
-                        <button id="timerBtn" class="btn" style="flex:1; margin-bottom:0; background:var(--accent);">Activer</button>
+                    <div class="grid">
+                        <div class="dot" style="background:red" onclick="setPreset(0)"></div>
+                        <div class="dot" style="background:#00ff00" onclick="setPreset(1)"></div>
+                        <div class="dot" style="background:cyan" onclick="setPreset(2)"></div>
+                        <div class="dot" style="background:yellow" onclick="setPreset(3)"></div>
+                        <div class="dot" style="background:purple" onclick="setPreset(4)"></div>
+                        <div class="dot" style="background:white" onclick="setPreset(5)"></div>
                     </div>
                 </div>
-            </div>
-        </div>
+
+                <div class="card">
+                    <span class="section-title">Ambiance Dynamique</span>
+                    <select id="fxSelect">
+                        <option value="0">Statique (Couleur)</option>
+                        <option value="2">🌈 Arc-en-ciel Zen</option>
+                        <option value="3">💓 Respiration</option>
+                        <option value="4">🔥 Feu de cheminée</option>
+                        <option value="5">🌊 Océan (Bleu/Cyan)</option>
+                        <option value="6">🌲 Forêt Magique</option>
+                        <option value="7">✨ Disco Chill</option>
+                    </select>
+                </div>
+
+                <div class="card">
+                    <span class="section-title">Options Avancées</span>
+                    
+                    <div class="switch-row">
+                        <span>Capteur de Vibration</span>
+                        <input type="checkbox" id="vibToggle" checked>
+                    </div>
+                    <div class="hint-text"><b>Mode Refuge :</b> Allume le Hiboux à 2% d'intensité pendant 5s s'il détecte un mouvement dans le noir. Pratique pour se lever la nuit sans s'éblouir.</div>
+
+                    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+
+                    <div style="text-align:left;">
+                        <span style="font-size:14px; color:#aaa;">Minuteur de Sommeil (Timer)</span>
+                        <div style="display:flex; gap:10px; margin-top:12px;">
+                            <select id="timerVal" style="flex:1.2; margin-top:0;">
+                                <option value="10">Test (10 sec)</option>
+                                <option value="900">15 min</option>
+                                <option value="1800" selected>30 min</option>
+                                <option value="3600">1h</option>
+                            </select>
+                            <button id="timerBtn" class="btn" style="flex:1; margin-bottom:0; background:var(--accent);">Activer</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div> </div>
     </div>
 
     <script>
@@ -105,51 +130,91 @@
         if(navigator.bluetooth) document.getElementById('app').classList.remove('hidden');
         else document.getElementById('no-bt').classList.remove('hidden');
 
-        var colorPicker = new iro.ColorPicker("#color-wheel", { width: 260, color: "#fff", borderWidth: 2, borderColor: "#333", layout: [{ component: iro.ui.Wheel, options: {} }] });
+        var colorPicker = new iro.ColorPicker("#color-wheel", { 
+            width: 260, color: "#fff", borderWidth: 2, borderColor: "#333", 
+            layout: [{ component: iro.ui.Wheel, options: {} }] 
+        });
 
         let lastSend = 0;
         colorPicker.on('color:change', function(color) {
             const now = Date.now();
-            if(now - lastSend > 100) { send([88, color.rgb.r, color.rgb.g, color.rgb.b]); lastSend = now; }
+            if(now - lastSend > 100) { 
+                send([88, color.rgb.r, color.rgb.g, color.rgb.b]); 
+                lastSend = now; 
+            }
         });
 
         async function connect() {
             try {
-                device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'Hiboux_Funky' }], optionalServices: [SRV_UUID] });
+                const btn = document.getElementById('connectBtn');
+                const container = document.getElementById('controls-container');
+                const badge = document.getElementById('status-badge');
+                
+                btn.innerText = "Recherche...";
+                device = await navigator.bluetooth.requestDevice({ 
+                    filters: [{ name: 'Hiboux_Funky' }], 
+                    optionalServices: [SRV_UUID] 
+                });
+                
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService(SRV_UUID);
                 char = await service.getCharacteristic(CHR_UUID);
-                document.getElementById('connectBtn').innerText = "Connecté ✅";
+                
+                // DEBLOCAGE
+                btn.classList.add('hidden');
+                container.classList.remove('locked');
+                badge.innerText = "Hiboux Connecté ✅";
+                badge.style.color = "var(--success)";
+                badge.style.background = "rgba(52, 199, 89, 0.1)";
+                
                 updatePowerBtnUI();
-            } catch(e) { console.log(e); }
+                device.addEventListener('gattserverdisconnected', onDisconnected);
+
+            } catch(e) { 
+                console.log(e); 
+                document.getElementById('connectBtn').innerText = "Échec - Réessayer 🔌";
+            }
+        }
+
+        function onDisconnected() {
+            document.getElementById('connectBtn').classList.remove('hidden');
+            document.getElementById('connectBtn').innerText = "Connexion perdue - Reconnecter 🔌";
+            document.getElementById('controls-container').classList.add('locked');
+            document.getElementById('status-badge').innerText = "Déconnecté";
+            document.getElementById('status-badge').style.color = "#666";
+            document.getElementById('status-badge').style.background = "#222";
         }
 
         async function send(data) { if(char) try { await char.writeValue(new Uint8Array(data)); } catch(e){} }
 
         function updatePowerBtnUI() {
             const pbtn = document.getElementById('pwrBtn');
-            pbtn.innerText = isOn ? "Lampe Allumée" : "Lampe Éteinte";
+            pbtn.innerText = isOn ? "Hiboux Allumé" : "Hiboux Éteint";
             pbtn.className = "btn " + (isOn ? "pwr-on" : "pwr-off");
         }
 
         document.getElementById('connectBtn').onclick = connect;
-        document.getElementById('pwrBtn').onclick = () => { isOn = !isOn; send([80, isOn ? 1 : 0]); updatePowerBtnUI(); };
+        
+        document.getElementById('pwrBtn').onclick = () => { 
+            isOn = !isOn; 
+            send([80, isOn ? 1 : 0]); 
+            updatePowerBtnUI(); 
+        };
+
         document.getElementById('bri').oninput = (e) => send([66, parseInt(e.target.value)]);
         document.getElementById('fxSelect').onchange = (e) => send([69, parseInt(e.target.value)]);
+        
         function setPreset(idx) { send([67, idx]); }
-        document.getElementById('vibToggle').onchange = (e) => send([86, e.target.checked ? 1 : 0]);
 
-        // LOGIQUE TIMER AMÉLIORÉE
+        document.getElementById('vibToggle').onchange = (e) => {
+            send([86, e.target.checked ? 1 : 0]); 
+        };
+
         document.getElementById('timerVal').onchange = (e) => {
             let val = parseInt(e.target.value);
-            // On envoie la durée au Hiboux (en secondes)
-            // On divise par 10 pour le stockage sur un octet si besoin, ou on gère en 16 bits.
-            // Ici on va envoyer la valeur telle quelle (max 3600), donc il faut 2 octets.
-            // On va simplifier : Envoi du code T + 2 octets (MSB, LSB)
             let msb = (val >> 8) & 0xFF;
             let lsb = val & 0xFF;
             send([84, msb, lsb]); 
-            // Si le timer est déjà actif, on demande au Hiboux de redémarrer avec cette nouvelle durée
             if(isTimerOn) send([83, 1]); 
         };
 
