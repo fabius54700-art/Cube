@@ -3,94 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
-    <title>Hiboux Funky Sync</title>
+    <title>Hiboux Funky</title>
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #007aff; --text: #ffffff; --success: #34c759; --danger: #ff3b30; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .card { background: var(--card); padding: 20px; border-radius: 25px; width: 100%; max-width: 350px; margin-bottom: 20px; transition: 0.3s; }
-        .locked { opacity: 0.2; pointer-events: none; filter: grayscale(1); }
-        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        #status-badge { font-size: 10px; opacity: 0.5; margin-bottom: 10px; text-transform: uppercase; }
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759; --text: #ffffff; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; }
+        .container { width: 100%; max-width: 400px; text-align: center; }
+        h1 { font-weight: 200; letter-spacing: 4px; text-transform: uppercase; margin: 20px 0; font-size: 1.2rem; }
+        #connectBtn { background: var(--success); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+        .card { background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+        #controls-container { transition: 0.5s; }
+        .locked { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
+        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; background: #3a3a3c; }
+        #pwrBtn.on { border: 2px solid var(--success); }
         input[type="range"] { width: 100%; margin: 20px 0; }
-        select { width: 100%; padding: 12px; border-radius: 10px; background: #333; color: white; border: none; }
-        .hidden { display: none; }
+        select { width: 100%; padding: 12px; border-radius: 10px; background: #333; color: white; border: none; text-align: center; }
+        #picker { display: flex; justify-content: center; margin: 15px 0; }
+        .hint-text { color: #666; font-size: 11px; margin-top: 8px; text-align: left; }
     </style>
 </head>
 <body>
-
-    <div id="status-badge">Prêt à connecter</div>
-    <button id="connectBtn" class="btn" style="background:var(--success); color:white;">Connecter mon Hiboux 🔌</button>
-
-    <div id="controls" class="locked">
-        <div class="card">
-            <button id="pwrBtn" class="btn">Chargement...</button>
-            <div id="picker" style="display:flex; justify-content:center; margin:20px 0;"></div>
-            <input type="range" id="briSlider" min="13" max="255">
-        </div>
-
-        <div class="card">
-            <span style="font-size:12px; color:#888;">AMBIANCE</span>
-            <select id="modeSelect">
-                <option value="0">Statique</option>
-                <option value="2">🌈 Arc-en-ciel</option>
-                <option value="3">💓 Respiration</option>
-            </select>
+    <div class="container">
+        <h1>Hiboux Funky</h1>
+        <button id="connectBtn">Connecter mon Hiboux 🔌</button>
+        <div id="controls-container" class="locked">
+            <div class="card">
+                <button id="pwrBtn" class="btn">Chargement...</button>
+                <div id="picker"></div>
+                <input type="range" id="briSlider" min="13" max="255">
+            </div>
+            <div class="card">
+                <select id="modeSelect">
+                    <option value="0">Statique (Couleur)</option>
+                    <option value="2">🌈 Arc-en-ciel Zen</option>
+                    <option value="3">💓 Respiration</option>
+                    <option value="4">🔥 Feu de cheminée</option>
+                    <option value="5">🌊 Océan</option>
+                    <option value="6">🌲 Forêt Magique</option>
+                    <option value="7">✨ Disco Chill</option>
+                </select>
+                <div class="hint-text">Note : Changer la couleur repasse la lampe en mode statique.</div>
+            </div>
         </div>
     </div>
 
     <script>
         const SRV_UUID = "6e400008-b5a3-f393-e0a9-e50e24dcca9e";
         const CHR_UUID = "6e400009-b5a3-f393-e0a9-e50e24dcca9e";
-        let char, isOn = false;
+        let char, isOn = false, lastSend = 0;
+        let isSyncing = false; // LE VERROU
 
-        var colorPicker = new iro.ColorPicker("#picker", { width: 220, layout: [{ component: iro.ui.Wheel }] });
+        var colorPicker = new iro.ColorPicker("#picker", { width: 250, color: "#fff", layout: [{ component: iro.ui.Wheel }] });
 
-        // Envoi des données vers la lampe
-        async function send(data) { if(char) await char.writeValue(new Uint8Array(data)); }
+        async function send(data) { 
+            if(char && !isSyncing) try { await char.writeValue(new Uint8Array(data)); } catch(e){} 
+        }
 
         colorPicker.on('color:change', (color) => {
-            if (Date.now() - lastSend > 100) {
+            if(isSyncing) return; // On n'envoie rien si c'est la lampe qui nous parle
+            const now = Date.now();
+            if(now - lastSend > 100) {
                 send([88, color.rgb.r, color.rgb.g, color.rgb.b]);
-                lastSend = Date.now();
+                lastSend = now;
             }
         });
-        let lastSend = 0;
 
-        // --- CONNEXION ET SYNCHRO ---
         document.getElementById('connectBtn').onclick = async () => {
-            const device = await navigator.bluetooth.requestDevice({ 
-                filters: [{ name: 'Hiboux_Funky' }], 
-                optionalServices: [SRV_UUID] 
-            });
-            const server = await device.gatt.connect();
-            const service = await server.getPrimaryService(SRV_UUID);
-            char = await service.getCharacteristic(CHR_UUID);
+            try {
+                const device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'Hiboux_Funky' }], optionalServices: [SRV_UUID] });
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(SRV_UUID);
+                char = await service.getCharacteristic(CHR_UUID);
 
-            // 1. Écouter les notifications de la lampe
-            await char.startNotifications();
-            char.addEventListener('characteristicvaluechanged', (e) => {
-                const d = e.target.value;
-                // Update UI sans renvoyer d'ordres
-                isOn = d.getUint8(0) === 1;
-                document.getElementById('briSlider').value = d.getUint8(1);
-                document.getElementById('modeSelect').value = d.getUint8(2);
-                colorPicker.color.set({r: d.getUint8(3), g: d.getUint8(4), b: d.getUint8(5)});
-                updateUI();
-            });
+                await char.startNotifications();
+                char.addEventListener('characteristicvaluechanged', (e) => {
+                    const d = e.target.value;
+                    isSyncing = true; // On verrouille
+                    
+                    isOn = d.getUint8(0) === 1;
+                    document.getElementById('briSlider').value = d.getUint8(1);
+                    document.getElementById('modeSelect').value = d.getUint8(2);
+                    colorPicker.color.set({r: d.getUint8(3), g: d.getUint8(4), b: d.getUint8(5)});
+                    
+                    updateUI();
+                    setTimeout(() => { isSyncing = false; }, 200); // On déverrouille après un court délai
+                });
 
-            // 2. Débloquer et demander l'état actuel
-            document.getElementById('controls').classList.remove('locked');
-            document.getElementById('connectBtn').classList.add('hidden');
-            document.getElementById('status-badge').innerText = "Connecté ✅";
-            send([81]); // Code 'Q' pour Query
+                document.getElementById('controls-container').classList.remove('locked');
+                document.getElementById('connectBtn').innerText = "Connecté ✅";
+                
+                // On demande l'état APRÈS avoir activé l'écoute
+                setTimeout(() => { send([81]); }, 500); 
+
+            } catch(e) { alert("Erreur de connexion"); }
         };
 
         function updateUI() {
             const b = document.getElementById('pwrBtn');
-            b.innerText = isOn ? "ALLUMÉ" : "ÉTEINT";
-            b.style.background = isOn ? "#3a3a3c" : "#222";
-            b.style.border = isOn ? "2px solid var(--success)" : "2px solid var(--danger)";
+            b.innerText = isOn ? "Lampe Allumée" : "Lampe Éteinte";
+            b.className = isOn ? "btn on" : "btn";
         }
 
         document.getElementById('pwrBtn').onclick = () => { isOn = !isOn; send([80, isOn?1:0]); updateUI(); };
