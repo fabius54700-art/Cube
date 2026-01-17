@@ -8,129 +8,55 @@
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <title>Hiboux Funky</title>
     <style>
-        :root { 
-            --bg: #121212; 
-            --card: #1e1e1e; 
-            --accent: #007aff; 
-            --danger: #ff3b30;
-            --success: #34c759;
-            --text: #ffffff; 
-        }
-        
-        body { 
-            font-family: -apple-system, system-ui, sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh; 
-            padding: 20px; 
-            box-sizing: border-box; 
-        }
-        
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759; --text: #ffffff; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         .container { width: 100%; max-width: 400px; text-align: center; padding-bottom: 40px; }
-        
         h1 { font-weight: 200; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 25px; font-size: 1.4rem; }
-        
-        /* Cartes d'interface */
-        .card { 
-            background: var(--card); 
-            padding: 20px; 
-            border-radius: 25px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            margin-bottom: 20px; 
-            border: 1px solid rgba(255,255,255,0.05); 
-        }
-        
-        .section-title {
-            color: #888; 
-            font-size: 11px; 
-            letter-spacing: 1.5px; 
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        /* Boutons et Contrôles */
-        .btn { 
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            padding: 15px; 
-            border-radius: 15px; 
-            width: 100%; 
-            font-weight: 600; 
-            font-size: 16px; 
-            margin-bottom: 10px; 
-            cursor: pointer; 
-            transition: 0.2s; 
-        }
+        .card { background: var(--card); padding: 20px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .section-title { color: #888; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .btn { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: 600; font-size: 16px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; outline: none; }
         .btn:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-grey { background: #3a3a3c; }
-        .btn-outline { background: transparent; border: 1px solid #444; color: #aaa; }
-
-        /* Variateur luminosité */
-        input[type="range"] { 
-            width: 100%; -webkit-appearance: none; background: #333; height: 6px; border-radius: 3px; margin: 25px 0; outline: none; 
-        }
-        input[type="range"]::-webkit-slider-thumb { 
-            -webkit-appearance: none; width: 26px; height: 26px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5); 
-        }
-
-        /* Grille de presets */
+        /* Style corrigé du bouton Power */
+        #pwrBtn { border: 2px solid transparent; transition: 0.3s; }
+        .pwr-on { background: #3a3a3c !important; border-color: var(--success) !important; box-shadow: 0 0 15px rgba(52, 199, 89, 0.2); }
+        .pwr-off { background: #3a3a3c !important; border-color: var(--danger) !important; color: #888; }
+        
+        input[type="range"] { width: 100%; -webkit-appearance: none; background: #333; height: 6px; border-radius: 3px; margin: 25px 0; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
         .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 15px; }
-        .dot { height: 35px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.05); cursor: pointer; }
-
-        /* Menus déroulants */
-        select { 
-            width: 100%; padding: 15px; border-radius: 15px; background: #3a3a3c; color: white; border: none; font-size: 16px; margin-top: 5px; -webkit-appearance: none; text-align: center; 
-        }
-
-        /* Toggle Switch */
+        .dot { height: 35px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; }
+        select { width: 100%; padding: 15px; border-radius: 15px; background: #3a3a3c; color: white; border: none; font-size: 16px; margin-top: 5px; -webkit-appearance: none; text-align: center; outline: none; }
         .switch-row { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; }
         input[type="checkbox"] { transform: scale(1.4); margin-right: 10px; }
-
-        /* Lien et texte */
-        .link-box { 
-            display: block; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; font-size: 11px; color: #555; text-decoration: none; margin-top: 10px; border: 1px solid transparent; word-break: break-all;
-        }
-        .hint-text { color: #444; font-size: 10px; margin-top: 15px; line-height: 1.4; }
+        .link-box { display: block; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; font-size: 11px; color: #555; text-decoration: none; margin-top: 10px; border: 1px solid transparent; word-break: break-all; }
+        .hint-text { color: #666; font-size: 11px; margin-top: 8px; line-height: 1.4; text-align: left; }
         .hidden { display: none !important; }
         #color-wheel { display: flex; justify-content: center; margin: 15px 0; }
     </style>
 </head>
 <body>
-
     <div class="container">
         <h1>Hiboux Funky</h1>
-
         <div id="no-bt" class="card hidden">
-            <p style="color:#aaa;">Bluetooth non supporté.<br>Sur iPhone, utilisez l'application <b>Bluefy</b>.</p>
-            <a href="#" id="linkTextErr" class="link-box">...</a>
-            <button class="btn btn-grey" onclick="copyLink()">Copier le lien</button>
+            <p style="color:#aaa;">Bluetooth non supporté.</p>
+            <button class="btn btn-grey" onclick="location.reload()">Réactualiser</button>
         </div>
 
         <div id="app" class="hidden">
-            
-            <button id="connectBtn" class="btn" style="background:var(--success);">Connecter la Lampe 🔌</button>
+            <button id="connectBtn" class="btn" style="background:var(--success);">Connecter le Hiboux 🔌</button>
 
             <div class="card">
                 <span class="section-title">Lumière & Couleur</span>
-                <button id="pwrBtn" class="btn btn-grey">Chargement...</button>
-                
+                <button id="pwrBtn" class="btn pwr-off">Déconnecté</button>
                 <div id="color-wheel"></div>
-                
                 <input type="range" id="bri" min="10" max="255" value="150">
-
                 <div class="grid">
                     <div class="dot" style="background:red" onclick="setPreset(0)"></div>
                     <div class="dot" style="background:#00ff00" onclick="setPreset(1)"></div>
                     <div class="dot" style="background:cyan" onclick="setPreset(2)"></div>
                     <div class="dot" style="background:yellow" onclick="setPreset(3)"></div>
                     <div class="dot" style="background:purple" onclick="setPreset(4)"></div>
-                    <div class="dot" style="background:blue" onclick="setPreset(5)"></div>
+                    <div class="dot" style="background:white" onclick="setPreset(5)"></div>
                 </div>
             </div>
 
@@ -149,141 +75,91 @@
 
             <div class="card">
                 <span class="section-title">Options Avancées</span>
-                
                 <div class="switch-row">
                     <span>Capteur de Vibration</span>
                     <input type="checkbox" id="vibToggle" checked>
                 </div>
-
+                <div class="hint-text">Allume la lampe à 2% d'intensité pendant 5s si Hiboux détecte un mouvement dans le noir (Mode Pipi).</div>
                 <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-
                 <div style="text-align:left;">
-                    <span style="font-size:14px; color:#aaa;">Minuteur de Sommeil (Timer)</span>
+                    <span style="font-size:14px; color:#aaa;">Minuteur de Sommeil</span>
                     <div style="display:flex; gap:10px; margin-top:12px;">
                         <select id="timerVal" style="flex:1.2; margin-top:0;">
-                            <option value="15">15 min</option>
-                            <option value="30" selected>30 min</option>
-                            <option value="60">1h</option>
-                            <option value="120">2h</option>
+                            <option value="10">Test (10 sec)</option>
+                            <option value="900">15 min</option>
+                            <option value="1800" selected>30 min</option>
+                            <option value="3600">1h</option>
                         </select>
                         <button id="timerBtn" class="btn" style="flex:1; margin-bottom:0; background:var(--accent);">Activer</button>
                     </div>
                 </div>
             </div>
-            
-            <a href="#" id="shareLink" class="link-box">Lien de l'App</a>
-            <div class="hint-text">💡 <b>Astuce :</b> Ajoutez cette page à votre écran d'accueil pour l'ouvrir comme une application native.</div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION BLE ---
         const SRV_UUID = "6e400008-b5a3-f393-e0a9-e50e24dcca9e";
         const CHR_UUID = "6e400009-b5a3-f393-e0a9-e50e24dcca9e";
         let device, char, isOn = true, isTimerOn = false;
 
-        // Gestion des liens d'erreur
-        const currentUrl = window.location.href;
-        document.getElementById('shareLink').innerText = currentUrl;
-        document.getElementById('shareLink').href = currentUrl;
-        document.getElementById('linkTextErr').innerText = currentUrl;
-
-        // Vérification du support Bluetooth
         if(navigator.bluetooth) document.getElementById('app').classList.remove('hidden');
         else document.getElementById('no-bt').classList.remove('hidden');
 
-        // Initialisation de la roue chromatique
-        var colorPicker = new iro.ColorPicker("#color-wheel", { 
-            width: 260, 
-            color: "#fff", 
-            borderWidth: 2, 
-            borderColor: "#333", 
-            layout: [{ component: iro.ui.Wheel, options: {} }] 
-        });
+        var colorPicker = new iro.ColorPicker("#color-wheel", { width: 260, color: "#fff", borderWidth: 2, borderColor: "#333", layout: [{ component: iro.ui.Wheel, options: {} }] });
 
-        // Envoi de la couleur (Throttling à 100ms)
         let lastSend = 0;
         colorPicker.on('color:change', function(color) {
             const now = Date.now();
-            if(now - lastSend > 100) { 
-                send([88, color.rgb.r, color.rgb.g, color.rgb.b]); // Commande 'X' (88)
-                lastSend = now;
-            }
+            if(now - lastSend > 100) { send([88, color.rgb.r, color.rgb.g, color.rgb.b]); lastSend = now; }
         });
 
-        // --- FONCTIONS BLUETOOTH ---
         async function connect() {
             try {
-                const btn = document.getElementById('connectBtn');
-                btn.innerText = "Recherche...";
-                device = await navigator.bluetooth.requestDevice({ 
-                    filters: [{ name: 'Hiboux_Funky' }], 
-                    optionalServices: [SRV_UUID] 
-                });
+                device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'Hiboux_Funky' }], optionalServices: [SRV_UUID] });
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService(SRV_UUID);
                 char = await service.getCharacteristic(CHR_UUID);
-                
-                btn.innerText = "Connecté ✅";
-                btn.style.background = "#1e1e1e";
-                btn.style.border = "1px solid #333";
+                document.getElementById('connectBtn').innerText = "Connecté ✅";
                 updatePowerBtnUI();
-            } catch(e) { 
-                console.log(e); 
-                document.getElementById('connectBtn').innerText = "Erreur - Réessayer 🔌";
-            }
+            } catch(e) { console.log(e); }
         }
 
-        async function send(data) { 
-            if(char) {
-                try { await char.writeValue(new Uint8Array(data)); } catch(e){ console.log("Send error"); }
-            }
-        }
-
-        // --- ÉVÈNEMENTS INTERFACE ---
-        document.getElementById('connectBtn').onclick = connect;
+        async function send(data) { if(char) try { await char.writeValue(new Uint8Array(data)); } catch(e){} }
 
         function updatePowerBtnUI() {
             const pbtn = document.getElementById('pwrBtn');
             pbtn.innerText = isOn ? "Lampe Allumée" : "Lampe Éteinte";
-            pbtn.style.background = isOn ? "#3a3a3c" : "#555";
-            pbtn.style.borderLeft = isOn ? "4px solid #34c759" : "4px solid #ff3b30";
+            pbtn.className = "btn " + (isOn ? "pwr-on" : "pwr-off");
         }
-        updatePowerBtnUI();
 
-        document.getElementById('pwrBtn').onclick = () => { 
-            isOn = !isOn; 
-            send([80, isOn ? 1 : 0]); // Commande 'P' (80)
-            updatePowerBtnUI();
-        };
+        document.getElementById('connectBtn').onclick = connect;
+        document.getElementById('pwrBtn').onclick = () => { isOn = !isOn; send([80, isOn ? 1 : 0]); updatePowerBtnUI(); };
+        document.getElementById('bri').oninput = (e) => send([66, parseInt(e.target.value)]);
+        document.getElementById('fxSelect').onchange = (e) => send([69, parseInt(e.target.value)]);
+        function setPreset(idx) { send([67, idx]); }
+        document.getElementById('vibToggle').onchange = (e) => send([86, e.target.checked ? 1 : 0]);
 
-        document.getElementById('bri').oninput = (e) => send([66, parseInt(e.target.value)]); // Commande 'B' (66)
-        document.getElementById('fxSelect').onchange = (e) => send([69, parseInt(e.target.value)]); // Commande 'E' (69)
-        function setPreset(idx) { send([67, idx]); } // Commande 'C' (67)
-
-        // --- NOUVELLES OPTIONS ---
-
-        document.getElementById('vibToggle').onchange = (e) => {
-            send([86, e.target.checked ? 1 : 0]); // Commande 'V' (86)
-        };
-
+        // LOGIQUE TIMER AMÉLIORÉE
         document.getElementById('timerVal').onchange = (e) => {
-            send([84, parseInt(e.target.value)]); // Commande 'T' (84)
+            let val = parseInt(e.target.value);
+            // On envoie la durée au Hiboux (en secondes)
+            // On divise par 10 pour le stockage sur un octet si besoin, ou on gère en 16 bits.
+            // Ici on va envoyer la valeur telle quelle (max 3600), donc il faut 2 octets.
+            // On va simplifier : Envoi du code T + 2 octets (MSB, LSB)
+            let msb = (val >> 8) & 0xFF;
+            let lsb = val & 0xFF;
+            send([84, msb, lsb]); 
+            // Si le timer est déjà actif, on demande au Hiboux de redémarrer avec cette nouvelle durée
+            if(isTimerOn) send([83, 1]); 
         };
 
         document.getElementById('timerBtn').onclick = () => {
             isTimerOn = !isTimerOn;
-            send([83, isTimerOn ? 1 : 0]); // Commande 'S' (83)
+            send([83, isTimerOn ? 1 : 0]);
             const tbtn = document.getElementById('timerBtn');
             tbtn.innerText = isTimerOn ? "Annuler" : "Activer";
             tbtn.style.background = isTimerOn ? "var(--danger)" : "var(--accent)";
         };
-
-        function copyLink() { 
-            navigator.clipboard.writeText(window.location.href); 
-            alert("Lien copié !"); 
-        }
     </script>
 </body>
-
 </html>
