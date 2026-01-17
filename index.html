@@ -2,112 +2,200 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
-    <title>Hiboux Funky</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiboux Funky - Control</title>
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759; --text: #ffffff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; }
-        .container { width: 100%; max-width: 400px; text-align: center; }
-        h1 { font-weight: 200; letter-spacing: 4px; text-transform: uppercase; margin: 20px 0; font-size: 1.2rem; }
-        #connectBtn { background: var(--success); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
-        .card { background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
-        #controls-container { transition: 0.5s; }
-        .locked { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
-        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; background: #3a3a3c; }
-        #pwrBtn.on { border: 2px solid var(--success); }
-        input[type="range"] { width: 100%; margin: 20px 0; }
-        select { width: 100%; padding: 12px; border-radius: 10px; background: #333; color: white; border: none; text-align: center; }
-        #picker { display: flex; justify-content: center; margin: 15px 0; }
-        .hint-text { color: #666; font-size: 11px; margin-top: 8px; text-align: left; }
+        :root { --p-color: #ff9f43; --bg: #1a1a2e; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; text-align: center; padding: 20px; }
+        .card { background: #16213e; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
+        button { background: var(--p-color); border: none; padding: 12px 25px; border-radius: 25px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:active { transform: scale(0.95); }
+        input[type=range] { width: 100%; margin: 15px 0; accent-color: var(--p-color); }
+        .wheel-container { margin: 20px auto; width: 200px; height: 200px; position: relative; }
+        #colorWheel { width: 100%; height: 100%; border-radius: 50%; cursor: crosshair; border: 3px solid #fff; }
+        .presets { display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .swatch { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; cursor: pointer; }
+        .timer-badge { background: #e74c3c; padding: 5px 10px; border-radius: 10px; font-size: 0.8em; margin-top: 5px; display: none; }
+        select { background: #0f3460; color: white; border: 1px solid var(--p-color); padding: 8px; border-radius: 5px; width: 100%; }
+        .status { font-size: 0.9em; margin-bottom: 10px; color: #00ff88; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Hiboux Funky</h1>
-        <button id="connectBtn">Connecter mon Hiboux 🔌</button>
-        <div id="controls-container" class="locked">
-            <div class="card">
-                <button id="pwrBtn" class="btn">Chargement...</button>
-                <div id="picker"></div>
-                <input type="range" id="briSlider" min="13" max="255">
+
+    <h1>🦉 Hiboux Funky</h1>
+
+    <div class="card">
+        <div id="status" class="status">Déconnecté</div>
+        <button id="btnConnect">ASSOCIER MA LAMPE</button>
+    </div>
+
+    <div id="mainUI" class="disabled">
+        <div class="card">
+            <button id="btnPower" style="background:#444">CHARGEMENT...</button>
+            <p>Luminosité</p>
+            <input type="range" id="rangeBri" min="13" max="255">
+        </div>
+
+        <div class="card">
+            <p>Couleurs & Modes</p>
+            <div class="wheel-container">
+                <canvas id="colorWheel"></canvas>
             </div>
-            <div class="card">
-                <select id="modeSelect">
-                    <option value="0">Statique (Couleur)</option>
-                    <option value="2">🌈 Arc-en-ciel Zen</option>
-                    <option value="3">💓 Respiration</option>
-                    <option value="4">🔥 Feu de cheminée</option>
-                    <option value="5">🌊 Océan</option>
-                    <option value="6">🌲 Forêt Magique</option>
-                    <option value="7">✨ Disco Chill</option>
-                </select>
-                <div class="hint-text">Note : Changer la couleur repasse la lampe en mode statique.</div>
-            </div>
+            <div class="presets" id="presetContainer"></div>
+            <br>
+            <select id="selectMode">
+                <option value="0">Fixe</option>
+                <option value="2">Arc-en-ciel</option>
+                <option value="3">Respiration</option>
+                <option value="4">Bougie</option>
+                <option value="5">Océan</option>
+                <option value="6">Forêt</option>
+                <option value="7">Disco</option>
+            </select>
+        </div>
+
+        <div class="card">
+            <p>Timer Sommeil</p>
+            <select id="timerVal">
+                <option value="10">10 Secondes (Test)</option>
+                <option value="900">15 Minutes</option>
+                <option value="1800" selected>30 Minutes</option>
+                <option value="3600">1 Heure</option>
+            </select>
+            <div id="timerDisplay" class="timer-badge">Timer Actif</div>
+            <br><br>
+            <button id="btnTimer">ACTIVER TIMER</button>
+            <hr style="border:0.5px solid #222; margin:20px 0">
+            <label><input type="checkbox" id="checkVib" checked> Mode Pipi (Vibration)</label>
         </div>
     </div>
 
-    <script>
-        const SRV_UUID = "6e400008-b5a3-f393-e0a9-e50e24dcca9e";
-        const CHR_UUID = "6e400009-b5a3-f393-e0a9-e50e24dcca9e";
-        let char, isOn = false, lastSend = 0;
-        let isSyncing = false; // LE VERROU
+<script>
+    let char = null;
+    const SERVICE_UUID = "6e400008-b5a3-f393-e0a9-e50e24dcca9e";
+    const CHAR_UUID    = "6e400009-b5a3-f393-e0a9-e50e24dcca9e";
+    const colors = ["#FF0000", "#00FF00", "#0096FF", "#FFFF00", "#A020F0", "#FFFFFF", "#FF6432"];
 
-        var colorPicker = new iro.ColorPicker("#picker", { width: 250, color: "#fff", layout: [{ component: iro.ui.Wheel }] });
+    // --- CONNEXION ---
+    document.getElementById('btnConnect').onclick = async () => {
+        try {
+            const device = await navigator.bluetooth.requestDevice({
+                filters: [{ name: 'Hiboux_Funky' }],
+                optionalServices: [SERVICE_UUID]
+            });
+            const server = await device.gatt.connect();
+            const service = await server.getPrimaryService(SERVICE_UUID);
+            char = await service.getCharacteristic(CHAR_UUID);
+            
+            document.getElementById('status').innerText = "Connecté ✅";
+            document.getElementById('btnConnect').style.display = "none";
+            document.getElementById('mainUI').classList.remove('disabled');
 
-        async function send(data) { 
-            if(char && !isSyncing) try { await char.writeValue(new Uint8Array(data)); } catch(e){} 
+            // Activer les notifications (Synchro en temps réel)
+            await char.startNotifications();
+            char.addEventListener('characteristicvaluechanged', handleSync);
+            
+            // DEMANDER L'ÉTAT ACTUEL À LA LAMPE
+            send('Q', 0);
+        } catch (e) { console.log(e); }
+    };
+
+    // --- RÉCEPTION DES DONNÉES (LAMPE -> APP) ---
+    function handleSync(event) {
+        let v = event.target.value;
+        if (v.byteLength < 6) return;
+        
+        let isOn = v.getUint8(0) === 1;
+        let bri  = v.getUint8(1);
+        let mode = v.getUint8(2);
+        let r = v.getUint8(3), g = v.getUint8(4), b = v.getUint8(5);
+
+        // Update UI
+        document.getElementById('btnPower').innerText = isOn ? "ÉTEINDRE" : "ALLUMER";
+        document.getElementById('btnPower').style.background = isOn ? "#e74c3c" : "#2ecc71";
+        document.getElementById('rangeBri').value = bri;
+        document.getElementById('selectMode').value = mode;
+        // Ici on pourrait aussi mettre à jour le curseur de la roue si besoin
+    }
+
+    // --- ENVOI DES DONNÉES (APP -> LAMPE) ---
+    async function send(type, v1, v2, v3) {
+        if (!char) return;
+        let data;
+        if (type === 'X') data = new Uint8Array([120, v1, v2, v3]); // 'x' pour RGB
+        else if (type === 'T') data = new Uint8Array([84, v1 >> 8, v1 & 0xFF]); // 'T' pour Timer
+        else data = new Uint8Array([type.charCodeAt(0), v1]);
+        await char.writeValue(data);
+    }
+
+    // --- EVENTS UI ---
+    document.getElementById('btnPower').onclick = () => {
+        let state = document.getElementById('btnPower').innerText === "ALLUMER" ? 1 : 0;
+        send('P', state);
+    };
+
+    document.getElementById('rangeBri').oninput = (e) => send('B', e.target.value);
+    document.getElementById('selectMode').onchange = (e) => send('E', e.target.value);
+    document.getElementById('checkVib').onchange = (e) => send('V', e.target.checked ? 1 : 0);
+    
+    document.getElementById('btnTimer').onclick = () => {
+        let sec = document.getElementById('timerVal').value;
+        send('T', parseInt(sec)); // Envoyer la durée
+        send('S', 1); // Activer
+        document.getElementById('timerDisplay').style.display = "block";
+        setTimeout(() => document.getElementById('timerDisplay').style.display = "none", 3000);
+    };
+
+    // --- ROUE & PRESETS ---
+    const canvas = document.getElementById('colorWheel');
+    const ctx = canvas.getContext('2d');
+    function drawWheel() {
+        const radius = canvas.width / 2;
+        for (let angle = 0; angle < 360; angle++) {
+            let startAngle = (angle - 2) * Math.PI / 180;
+            let endAngle = angle * Math.PI / 180;
+            ctx.beginPath(); ctx.moveTo(radius, radius);
+            ctx.arc(radius, radius, radius, startAngle, endAngle);
+            ctx.fillStyle = `hsl(${angle}, 100%, 50%)`; ctx.fill();
         }
+    }
+    canvas.width = 200; canvas.height = 200; drawWheel();
 
-        colorPicker.on('color:change', (color) => {
-            if(isSyncing) return; // On n'envoie rien si c'est la lampe qui nous parle
-            const now = Date.now();
-            if(now - lastSend > 100) {
-                send([88, color.rgb.r, color.rgb.g, color.rgb.b]);
-                lastSend = now;
-            }
-        });
+    canvas.onclick = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left - 100, y = e.clientY - rect.top - 100;
+        const angle = Math.atan2(y, x) * 180 / Math.PI + 180;
+        // Conversion simplifiée HSL vers RGB pour l'envoi
+        let rgb = hslToRgb(angle/360, 1, 0.5);
+        send('X', rgb[0], rgb[1], rgb[2]);
+    };
 
-        document.getElementById('connectBtn').onclick = async () => {
-            try {
-                const device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'Hiboux_Funky' }], optionalServices: [SRV_UUID] });
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService(SRV_UUID);
-                char = await service.getCharacteristic(CHR_UUID);
+    const container = document.getElementById('presetContainer');
+    colors.forEach((c, i) => {
+        let s = document.createElement('div'); s.className = 'swatch';
+        s.style.background = c;
+        s.onclick = () => send('C', i);
+        container.appendChild(s);
+    });
 
-                await char.startNotifications();
-                char.addEventListener('characteristicvaluechanged', (e) => {
-                    const d = e.target.value;
-                    isSyncing = true; // On verrouille
-                    
-                    isOn = d.getUint8(0) === 1;
-                    document.getElementById('briSlider').value = d.getUint8(1);
-                    document.getElementById('modeSelect').value = d.getUint8(2);
-                    colorPicker.color.set({r: d.getUint8(3), g: d.getUint8(4), b: d.getUint8(5)});
-                    
-                    updateUI();
-                    setTimeout(() => { isSyncing = false; }, 200); // On déverrouille après un court délai
-                });
-
-                document.getElementById('controls-container').classList.remove('locked');
-                document.getElementById('connectBtn').innerText = "Connecté ✅";
-                
-                // On demande l'état APRÈS avoir activé l'écoute
-                setTimeout(() => { send([81]); }, 500); 
-
-            } catch(e) { alert("Erreur de connexion"); }
-        };
-
-        function updateUI() {
-            const b = document.getElementById('pwrBtn');
-            b.innerText = isOn ? "Lampe Allumée" : "Lampe Éteinte";
-            b.className = isOn ? "btn on" : "btn";
+    function hslToRgb(h, s, l) {
+        let r, g, b;
+        if(s == 0) r = g = b = l;
+        else {
+            const hue2rgb = (p, q, t) => {
+                if(t < 0) t += 1; if(t > 1) t -= 1;
+                if(t < 1/6) return p + (q - p) * 6 * t;
+                if(t < 1/2) return q;
+                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3); g = hue2rgb(p, q, h); b = hue2rgb(p, q, h - 1/3);
         }
-
-        document.getElementById('pwrBtn').onclick = () => { isOn = !isOn; send([80, isOn?1:0]); updateUI(); };
-        document.getElementById('briSlider').oninput = (e) => send([66, e.target.value]);
-        document.getElementById('modeSelect').onchange = (e) => send([69, e.target.value]);
-    </script>
+        return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
+</script>
 </body>
 </html>
