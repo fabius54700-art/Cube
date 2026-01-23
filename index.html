@@ -9,85 +9,62 @@
     <meta name="apple-mobile-web-app-title" content="Color Beam">
     <meta name="theme-color" content="#121212">
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231e1e1e%22 rx=%2220%22/><text y=%22.9em%22 font-size=%2280%22 x=%2250%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>🦉</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231e1e1e%22/><text y=%22.9em%22 font-size=%2280%22 x=%2250%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>🦉</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231e1e1e%22 rx=%2220%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>💡</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231e1e1e%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>💡</text></svg>">
 
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <title>Color Beam</title>
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #0a84ff; --danger: #ff453a; --success: #32d74b; --text: #ffffff; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; -webkit-tap-highlight-color: transparent; min-height: 100vh; }
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759; --text: #ffffff; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         .container { width: 100%; max-width: 400px; text-align: center; padding-bottom: 40px; }
+        h1 { font-weight: 200; letter-spacing: 4px; text-transform: uppercase; margin: 20px 0; font-size: 1.2rem; background: linear-gradient(90deg, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* HEADER */
-        h1 { font-weight: 700; letter-spacing: 1px; margin: 10px 0 30px 0; font-size: 1.5rem; background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        
-        /* GROS BOUTON CONNECT */
-        #connectBtn { background: var(--success); color: #000; border: none; padding: 18px 40px; border-radius: 16px; font-weight: 700; cursor: pointer; margin-bottom: 20px; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(50, 215, 75, 0.4); transition: transform 0.2s, opacity 0.2s; width: 100%; }
-        #connectBtn:active { transform: scale(0.96); }
+        #connectBtn { background: var(--success); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-bottom: 20px; font-size: 1rem; box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3); transition: transform 0.2s; }
+        #connectBtn:active { transform: scale(0.95); }
 
-        /* CARTES */
-        .card { background: var(--card); padding: 24px; border-radius: 22px; margin-bottom: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); text-align: left; }
+        .card { background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         
-        /* CONTENEUR ANIMÉ */
-        #controls-container { transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); opacity: 0; pointer-events: none; transform: translateY(20px); display: none; }
-        #controls-container.visible { opacity: 1; pointer-events: all; transform: translateY(0); display: block; }
+        #controls-container { transition: opacity 0.5s ease; opacity: 0; pointer-events: none; height: 0; overflow: hidden; }
+        #controls-container.visible { opacity: 1; pointer-events: all; height: auto; overflow: visible; }
         
-        /* BOUTON ON/OFF */
-        #pwrBtn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer; color: white; background: #2c2c2e; font-size: 1rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        #pwrBtn:active { transform: scale(0.98); }
-        #pwrBtn.on { background: var(--text); color: black; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px; color: white; background: #3a3a3c; font-size: 1rem; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        #pwrBtn.on { background: rgba(52, 199, 89, 0.2); color: var(--success); border: 1px solid var(--success); }
         
-        /* SLIDER LUMINOSITE */
-        .slider-container { margin-top: 25px; }
-        input[type="range"] { width: 100%; height: 6px; background: #3a3a3c; border-radius: 5px; outline: none; -webkit-appearance: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+        input[type="range"] { width: 100%; margin: 25px 0 10px 0; accent-color: var(--text); }
         
-        /* SELECT MODES */
-        select { width: 100%; padding: 14px; border-radius: 12px; background: #2c2c2e; color: white; border: 1px solid #3a3a3c; font-size: 1rem; outline: none; appearance: none; font-weight: 500; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 10px auto; }
+        select { width: 100%; padding: 12px; border-radius: 12px; background: #2c2c2e; color: white; border: 1px solid #3a3a3c; text-align: center; font-size: 1rem; outline: none; appearance: none; }
         
-        #picker { display: flex; justify-content: center; margin: 25px 0 15px 0; }
+        #picker { display: flex; justify-content: center; margin: 20px 0; }
         
-        /* PRESETS */
-        .grid { display: flex; justify-content: center; gap: 12px; margin-bottom: 5px; flex-wrap: wrap; }
-        .dot { width: 36px; height: 36px; border-radius: 50%; border: 3px solid #2c2c2e; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .grid { display: flex; justify-content: center; gap: 12px; margin: 15px 0; flex-wrap: wrap; }
+        .dot { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.2s; }
         .dot:active { transform: scale(0.8); }
 
-        /* LIGNES & TEXTES */
-        .switch-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 1.05rem; font-weight: 600; }
-        .hint-text { color: #888; font-size: 0.85rem; margin-top: 5px; line-height: 1.4; font-weight: 400; }
+        .switch-row { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; font-size: 1rem; font-weight: 500; }
+        .hint-text { color: #888; font-size: 0.8rem; margin-top: 5px; text-align: left; line-height: 1.4; }
 
-        /* CHECKBOX STYLE iOS */
         input[type="checkbox"] { appearance: none; width: 50px; height: 30px; background: #3a3a3c; border-radius: 50px; position: relative; cursor: pointer; transition: 0.3s; margin: 0; }
         input[type="checkbox"]::after { content: ''; position: absolute; top: 2px; left: 2px; width: 26px; height: 26px; background: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         input[type="checkbox"]:checked { background: var(--success); }
         input[type="checkbox"]:checked::after { transform: translateX(20px); }
 
-        /* FOOTER */
-        .install-link { margin-top: 40px; color: #555; font-size: 0.85rem; text-decoration: none; cursor: pointer; padding: 10px; border-radius: 8px; transition: 0.2s; }
-        .install-link:hover { background: rgba(255,255,255,0.05); color: #888; }
+        .install-link { margin-top: 30px; color: #555; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🦉 Color Beam</h1>
-        <button id="connectBtn">Connecter ma lampe</button>
+        <h1>Color Beam</h1>
+        <button id="connectBtn">Connecter 🔌</button>
         
         <div id="controls-container">
-            
             <div class="card">
-                <button id="pwrBtn">
-                    <span id="pwrIcon">⏻</span> 
-                    <span id="pwrText">Éteinte</span>
-                </button>
-                
+                <button id="pwrBtn" class="btn">Allumer / Éteindre</button>
                 <div id="picker"></div>
                 <div class="grid" id="presetContainer"></div>
-                
-                <div class="slider-container">
-                    <input type="range" id="briSlider" min="13" max="255">
-                </div>
+                <input type="range" id="briSlider" min="13" max="255">
             </div>
 
             <div class="card">
@@ -100,12 +77,12 @@
                     <option value="4">🌀 Hypnose Spirale</option>
                     <option value="5">⚡ Orage</option>
                 </select>
-                <div class="hint-text">Toucher la roue de couleur réactive automatiquement le mode Statique.</div>
+                <div class="hint-text">Sélectionner une couleur repasse automatiquement en mode Statique.</div>
             </div>
 
             <div class="card">
                 <div class="switch-row"><span>Minuteur d'arrêt</span></div>
-                <div style="display:flex; gap:10px; margin-top:15px;">
+                <div style="display:flex; gap:10px; margin-top:10px;">
                     <select id="timerVal" style="flex:1;">
                         <option value="300">5 min</option>
                         <option value="600">10 min</option>
@@ -116,43 +93,42 @@
                         <option value="5400">1h 30</option>
                         <option value="7200">2h 00</option>
                     </select>
-                    <button id="timerBtn" class="btn" style="flex:1; margin:0; background:var(--accent); font-weight:600;">Lancer</button>
+                    <button id="timerBtn" class="btn" style="flex:1; margin:0; background:var(--accent);">Lancer</button>
                 </div>
-                <div id="timerFeedback" class="hint-text" style="display:none; color:var(--success); margin-top:10px; font-weight:600;">✅ Minuteur activé !</div>
+                <div id="timerFeedback" class="hint-text" style="display:none; color:var(--success); margin-top:5px;">Minuteur activé !</div>
             </div>
 
             <div class="card">
                 <div class="switch-row">
                     <span>Mode Réveil</span>
-                    <input type="checkbox" id="vibToggle" checked>
+                    <input type="checkbox" id="vibToggle" style="width:auto; margin:0;" checked>
                 </div>
                 <div class="hint-text">
-                    La lampe s'allumera doucement en veilleuse nocturne si vous la touchez (vibration) pendant la nuit.
+                    Si activé, la lampe s'allumera doucement en veilleuse si une vibration (choc) est détectée pendant la nuit.
                 </div>
             </div>
         </div>
 
         <div class="install-link" onclick="showInstallHelp()">
-            Comment installer l'icône sur l'accueil ?
+            Créer un raccourci "App"
         </div>
     </div>
 
     <script>
+        // NOTE: On garde le nom Bluetooth 'Hiboux_Funky' car c'est celui dans le code Arduino.
+        // Si tu changes le code Arduino, change-le ici aussi.
         const SRV_UUID = "6e400008-b5a3-f393-e0a9-e50e24dcca9e";
         const CHR_UUID = "6e400009-b5a3-f393-e0a9-e50e24dcca9e";
         let char, isOn = false, lastSend = 0, isSyncing = false;
 
-        // Init Couleur
         var colorPicker = new iro.ColorPicker("#picker", { 
-            width: 260, 
+            width: 250, 
             color: "#fff", 
             layout: [{ component: iro.ui.Wheel }],
             borderColor: "#1e1e1e",
-            borderWidth: 4,
-            handleRadius: 10
+            borderWidth: 2
         });
 
-        // Presets
         const presets = ["#FF0000", "#00FF00", "#0096FF", "#FFFF00", "#A020F0", "#FFFFFF", "#FF6432"];
         const presetGrid = document.getElementById('presetContainer');
         presets.forEach((c, i) => {
@@ -180,7 +156,6 @@
 
         document.getElementById('connectBtn').onclick = async () => {
             try {
-                // TENTATIVE DE CONNEXION
                 const device = await navigator.bluetooth.requestDevice({ filters: [{ name: 'Hiboux_Funky' }], optionalServices: [SRV_UUID] });
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService(SRV_UUID);
@@ -207,22 +182,13 @@
                 // Query statut initial
                 setTimeout(() => { send([81]); }, 500); 
 
-            } catch(e) { 
-                console.log(e);
-                // Si l'user annule, on ne fait rien.
-            }
+            } catch(e) { alert("Connexion échouée : " + e); }
         };
 
         function updateUI() {
             const b = document.getElementById('pwrBtn');
-            const txt = document.getElementById('pwrText');
-            if (isOn) {
-                txt.innerText = "Allumée";
-                b.className = "on";
-            } else {
-                txt.innerText = "Éteinte";
-                b.className = "";
-            }
+            b.innerText = isOn ? "Allumée" : "Éteinte";
+            b.className = isOn ? "btn on" : "btn";
         }
 
         document.getElementById('pwrBtn').onclick = () => { isOn = !isOn; send([80, isOn?1:0]); updateUI(); };
@@ -241,7 +207,7 @@
         };
 
         function showInstallHelp() {
-            alert("POUR AVOIR L'ICÔNE HIBOU 🦉 :\n\n📱 SUR IPHONE :\n1. Appuie sur le bouton Partage (carré avec flèche bas de l'écran).\n2. Descends et choisis 'Sur l'écran d'accueil'.\n\n📱 SUR ANDROID :\n1. Appuie sur les 3 points (haut droite).\n2. Choisis 'Ajouter à l'écran d'accueil'.");
+            alert("POUR L'ICÔNE LAMPE 💡 :\n\n📱 IPHONE : Bouton Partage > Sur l'écran d'accueil.\n\n📱 ANDROID : Menu (3 points) > Ajouter à l'écran d'accueil.");
         }
     </script>
 </body>
