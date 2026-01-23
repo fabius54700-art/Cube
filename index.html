@@ -4,76 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#121212">
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
-    <title>Hiboux Funky</title>
+    <title>Color Beam</title>
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759; --text: #ffffff; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; }
-        .container { width: 100%; max-width: 400px; text-align: center; }
-        h1 { font-weight: 200; letter-spacing: 4px; text-transform: uppercase; margin: 20px 0; font-size: 1.2rem; }
-        #connectBtn { background: var(--success); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
-        .card { background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
-        #controls-container { transition: 0.5s; }
-        .locked { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
-        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; background: #3a3a3c; }
-        #pwrBtn.on { border: 2px solid var(--success); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        .container { width: 100%; max-width: 400px; text-align: center; padding-bottom: 40px; }
+        h1 { font-weight: 200; letter-spacing: 4px; text-transform: uppercase; margin: 20px 0; font-size: 1.2rem; background: linear-gradient(90deg, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        input[type="range"] { width: 100%; margin: 20px 0; }
-        select { width: 100%; padding: 12px; border-radius: 10px; background: #333; color: white; border: none; text-align: center; font-size: 1rem; outline: none; }
-        #picker { display: flex; justify-content: center; margin: 15px 0; }
+        #connectBtn { background: var(--success); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-bottom: 20px; font-size: 1rem; box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3); transition: transform 0.2s; }
+        #connectBtn:active { transform: scale(0.95); }
+
+        .card { background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         
-        /* AJOUT : Presets & Options */
-        .grid { display: flex; justify-content: center; gap: 10px; margin: 10px 0 20px 0; flex-wrap: wrap; }
-        .dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s; }
-        .dot:active { transform: scale(0.9); }
-        .switch-row { display: flex; align-items: center; justify-content: space-between; margin: 15px 0; font-size: 0.9rem; }
-        .hint-text { color: #666; font-size: 11px; margin-top: 8px; text-align: left; }
+        #controls-container { transition: opacity 0.5s ease; opacity: 0; pointer-events: none; height: 0; overflow: hidden; }
+        #controls-container.visible { opacity: 1; pointer-events: all; height: auto; overflow: visible; }
+        
+        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px; color: white; background: #3a3a3c; font-size: 1rem; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        #pwrBtn.on { background: rgba(52, 199, 89, 0.2); color: var(--success); border: 1px solid var(--success); }
+        
+        input[type="range"] { width: 100%; margin: 25px 0 10px 0; accent-color: var(--text); }
+        
+        select { width: 100%; padding: 12px; border-radius: 12px; background: #2c2c2e; color: white; border: 1px solid #3a3a3c; text-align: center; font-size: 1rem; outline: none; appearance: none; }
+        
+        #picker { display: flex; justify-content: center; margin: 20px 0; }
+        
+        /* Presets */
+        .grid { display: flex; justify-content: center; gap: 12px; margin: 15px 0; flex-wrap: wrap; }
+        .dot { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.2s; }
+        .dot:active { transform: scale(0.8); }
+
+        /* Rows */
+        .switch-row { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; font-size: 1rem; font-weight: 500; }
+        .hint-text { color: #888; font-size: 0.8rem; margin-top: 5px; text-align: left; line-height: 1.4; }
+
+        /* Install Help */
+        .install-link { margin-top: 30px; color: #555; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Hiboux Funky</h1>
-        <button id="connectBtn">Connecter mon Hiboux 🔌</button>
+        <h1>Color Beam</h1>
+        <button id="connectBtn">Connecter 🔌</button>
         
-        <div id="controls-container" class="locked">
+        <div id="controls-container">
             <div class="card">
-                <button id="pwrBtn" class="btn">Chargement...</button>
+                <button id="pwrBtn" class="btn">Allumer / Éteindre</button>
                 <div id="picker"></div>
-                
                 <div class="grid" id="presetContainer"></div>
-                
                 <input type="range" id="briSlider" min="13" max="255">
             </div>
 
             <div class="card">
+                <div class="switch-row"><span>Ambiance</span></div>
                 <select id="modeSelect">
                     <option value="0">Statique (Couleur)</option>
-                    <option value="2">🌈 Arc-en-ciel Zen</option>
-                    <option value="3">💓 Respiration</option>
-                    <option value="4">🔥 Feu de cheminée</option>
-                    <option value="5">🌊 Océan</option>
-                    <option value="6">🌲 Forêt Magique</option>
-                    <option value="7">✨ Disco Chill</option>
+                    <option value="1">🕯️ Bougie Zen</option>
+                    <option value="2">🌬️ Respiration</option>
+                    <option value="3">🌫️ Brouillard Mystique</option>
+                    <option value="4">🌀 Hypnose Spirale</option>
+                    <option value="5">⚡ Orage</option>
                 </select>
-                <div class="hint-text">Note : Changer la couleur repasse la lampe en mode statique.</div>
+                <div class="hint-text">Sélectionner une couleur repasse automatiquement en mode Statique.</div>
+            </div>
+
+            <div class="card">
+                <div class="switch-row"><span>Minuteur d'arrêt</span></div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <select id="timerVal" style="flex:1;">
+                        <option value="300">5 min</option>
+                        <option value="600">10 min</option>
+                        <option value="900">15 min</option>
+                        <option value="1800" selected>30 min</option>
+                        <option value="2700">45 min</option>
+                        <option value="3600">1h 00</option>
+                        <option value="5400">1h 30</option>
+                        <option value="7200">2h 00</option>
+                    </select>
+                    <button id="timerBtn" class="btn" style="flex:1; margin:0; background:var(--accent);">Lancer</button>
+                </div>
+                <div id="timerFeedback" class="hint-text" style="display:none; color:var(--success); margin-top:5px;">Minuteur activé !</div>
             </div>
 
             <div class="card">
                 <div class="switch-row">
-                    <span>Mode Pipi (Vibration)</span>
-                    <input type="checkbox" id="vibToggle" checked>
+                    <span>Mode Réveil</span>
+                    <input type="checkbox" id="vibToggle" style="width:auto; margin:0;" checked>
                 </div>
-                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.05); margin:15px 0;">
-                <div style="display:flex; gap:10px; align-items: center;">
-                    <select id="timerVal" style="flex:1;">
-                        <option value="10">Test (10s)</option>
-                        <option value="900">15 min</option>
-                        <option value="1800" selected>30 min</option>
-                        <option value="3600">1h</option>
-                    </select>
-                    <button id="timerBtn" class="btn" style="flex:1; margin:0; background:var(--accent);">Lancer Timer</button>
+                <div class="hint-text">
+                    Si activé, la lampe s'allumera doucement en veilleuse si une vibration (choc) est détectée pendant la nuit.
                 </div>
             </div>
+        </div>
+
+        <div class="install-link" onclick="alert('Pour installer l\'app :\n\nSur iPhone (Safari) : Touche le bouton Partage (carré avec flèche) puis \'Sur l\'écran d\'accueil\'.\n\nSur Android (Chrome) : Touche les 3 points en haut à droite puis \'Ajouter à l\'écran d\'accueil\'.')">
+            Installer l'application sur l'écran d'accueil
         </div>
     </div>
 
@@ -82,10 +110,14 @@
         const CHR_UUID = "6e400009-b5a3-f393-e0a9-e50e24dcca9e";
         let char, isOn = false, lastSend = 0, isSyncing = false;
 
-        // Init iro.js avec ton réglage
-        var colorPicker = new iro.ColorPicker("#picker", { width: 250, color: "#fff", layout: [{ component: iro.ui.Wheel }] });
+        var colorPicker = new iro.ColorPicker("#picker", { 
+            width: 250, 
+            color: "#fff", 
+            layout: [{ component: iro.ui.Wheel }],
+            borderColor: "#1e1e1e",
+            borderWidth: 2
+        });
 
-        // Génération des presets
         const presets = ["#FF0000", "#00FF00", "#0096FF", "#FFFF00", "#A020F0", "#FFFFFF", "#FF6432"];
         const presetGrid = document.getElementById('presetContainer');
         presets.forEach((c, i) => {
@@ -98,7 +130,7 @@
 
         async function send(data) { 
             if(char && !isSyncing) {
-                try { await char.writeValue(new Uint8Array(data)); } catch(e){ console.log("Erreur d'envoi", e); } 
+                try { await char.writeValue(new Uint8Array(data)); } catch(e){ console.log("Erreur BLE", e); } 
             }
         }
 
@@ -127,39 +159,41 @@
                     isOn = d.getUint8(0) === 1;
                     document.getElementById('briSlider').value = d.getUint8(1);
                     document.getElementById('modeSelect').value = d.getUint8(2);
-                    
-                    // Mise à jour de la roue sans déclencher color:change
                     colorPicker.color.set({r: d.getUint8(3), g: d.getUint8(4), b: d.getUint8(5)});
                     
                     updateUI();
                     setTimeout(() => { isSyncing = false; }, 150);
                 });
 
-                document.getElementById('controls-container').classList.remove('locked');
+                document.getElementById('controls-container').classList.add('visible');
                 document.getElementById('connectBtn').style.display = 'none';
                 
-                // Demande d'état (Query)
+                // Query statut initial
                 setTimeout(() => { send([81]); }, 500); 
 
-            } catch(e) { alert("Erreur de connexion : " + e); }
+            } catch(e) { alert("Connexion échouée : " + e); }
         };
 
         function updateUI() {
             const b = document.getElementById('pwrBtn');
-            b.innerText = isOn ? "Lampe Allumée" : "Lampe Éteinte";
+            b.innerText = isOn ? "Allumée" : "Éteinte";
             b.className = isOn ? "btn on" : "btn";
-            b.style.borderColor = isOn ? "var(--success)" : "transparent";
         }
 
-        // Events controls
         document.getElementById('pwrBtn').onclick = () => { isOn = !isOn; send([80, isOn?1:0]); updateUI(); };
         document.getElementById('briSlider').oninput = (e) => send([66, e.target.value]);
         document.getElementById('modeSelect').onchange = (e) => send([69, e.target.value]);
         document.getElementById('vibToggle').onchange = (e) => send([86, e.target.checked ? 1 : 0]);
+        
         document.getElementById('timerBtn').onclick = () => {
             let val = parseInt(document.getElementById('timerVal').value);
-            send([84, (val >> 8) & 0xFF, val & 0xFF]); // Envoi durée (2 bytes)
-            setTimeout(() => send([83, 1]), 100); // Activation
+            send([84, (val >> 8) & 0xFF, val & 0xFF]); 
+            setTimeout(() => send([83, 1]), 100);
+            
+            // Petit feedback visuel
+            const fb = document.getElementById('timerFeedback');
+            fb.style.display = 'block';
+            setTimeout(() => { fb.style.display = 'none'; }, 3000);
         };
     </script>
 </body>
